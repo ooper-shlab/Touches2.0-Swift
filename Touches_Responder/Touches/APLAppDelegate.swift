@@ -59,6 +59,6 @@ import UIKit
 @objc(APLAppDelegate)
 class APLAppDelegate: UIResponder, UIApplicationDelegate {
 
-    var window: UIWindow!
+    var window: UIWindow?
 
 }

@@ -130,7 +130,7 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     
     
     // UIMenuController requires that we can become first responder or it won't display
-    var canBecomeFirstResponder: Bool {
+    override func canBecomeFirstResponder() -> Bool {
         return true
     }
     

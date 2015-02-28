@@ -81,8 +81,8 @@ class APLViewController: UIViewController {
     /**
     Handles the start of a touch.
     */
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        let numTaps = touches.anyObject()!.tapCount
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        let numTaps = (touches.first! as! UITouch).tapCount
         
         
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches began", comment: "Phase label text for touches began")
@@ -109,7 +109,7 @@ class APLViewController: UIViewController {
         }
         // Enumerate through all the touch objects.
         var touchCount = 0
-        for touch in touches {
+        for touch in touches as! Set<UITouch> {
             // Send to the dispatch method, which will make sure the appropriate subview is acted upon.
             self.dispatchFirstTouchAtPoint(touch.locationInView(self.view), forEvent: nil)
             touchCount++
@@ -135,13 +135,13 @@ class APLViewController: UIViewController {
     /**
     Handles the continuation of a touch.
     */
-    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
         var touchCount = 0
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches moved", comment: "Phase label text for touches moved")
         // Enumerates through all touch objects
-        for touch in touches {
+        for touch in touches as! Set<UITouch> {
             // Send to the dispatch method, which will make sure the appropriate subview is acted upon
-            self.dispatchTouchEvent(touch.view!!, toPosition: touch.locationInView(self.view))
+            self.dispatchTouchEvent(touch.view, toPosition: touch.locationInView(self.view))
             touchCount++
         }
         
@@ -175,12 +175,12 @@ class APLViewController: UIViewController {
     /**
     Handles the end of a touch event.
     */
-    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches ended", comment: "Phase label text for touches ended")
         // Enumerates through all touch object
-        for touch in touches {
+        for touch in touches as! Set<UITouch> {
             // Sends to the dispatch method, which will make sure the appropriate subview is acted upon
-            self.dispatchTouchEndEvent(touch.view!!, toPosition: touch.locationInView(self.view))
+            self.dispatchTouchEndEvent(touch.view, toPosition: touch.locationInView(self.view))
         }
     }
     
@@ -214,12 +214,12 @@ class APLViewController: UIViewController {
     }
     
     
-    override func touchesCancelled(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches cancelled", comment: "Phase label text for touches cancelled")
         // Enumerates through all touch objects.
-        for touch in touches {
+        for touch in touches as! Set<UITouch> {
             // Sends to the dispatch method, which will make sure the appropriate subview is acted upon.
-            self.dispatchTouchEndEvent(touch.view!!, toPosition: touch.locationInView(self.view))
+            self.dispatchTouchEndEvent(touch.view, toPosition: touch.locationInView(self.view))
         }
     }
     
