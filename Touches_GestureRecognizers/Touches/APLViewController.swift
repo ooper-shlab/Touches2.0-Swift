@@ -97,7 +97,7 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
             Set up the reset menu.
             */
             let menuItemTitle = NSLocalizedString("Reset", comment: "Reset menu item title")
-            let resetMenuItem = UIMenuItem(title: menuItemTitle, action: "resetPiece:")
+            let resetMenuItem = UIMenuItem(title: menuItemTitle, action: #selector(APLViewController.resetPiece(_:)))
             
             let menuController = UIMenuController.sharedMenuController()
             menuController.menuItems = [resetMenuItem]

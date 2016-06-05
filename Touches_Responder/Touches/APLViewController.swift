@@ -112,7 +112,7 @@ class APLViewController: UIViewController {
         for touch in touches as Set<UITouch> {
             // Send to the dispatch method, which will make sure the appropriate subview is acted upon.
             self.dispatchFirstTouchAtPoint(touch.locationInView(self.view), forEvent: nil)
-            touchCount++
+            touchCount += 1
         }
     }
     
@@ -142,7 +142,7 @@ class APLViewController: UIViewController {
         for touch in touches as Set<UITouch> {
             // Send to the dispatch method, which will make sure the appropriate subview is acted upon
             self.dispatchTouchEvent(touch.view!, toPosition: touch.locationInView(self.view))
-            touchCount++
+            touchCount += 1
         }
         
         // When multiple touches, report the number of touches.
