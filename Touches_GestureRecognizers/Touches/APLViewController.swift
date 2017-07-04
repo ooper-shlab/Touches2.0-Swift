@@ -72,13 +72,13 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     /**
     Scale and rotation transforms are applied relative to the layer's anchor point this method moves a gesture recognizer's view's anchor point between the user's fingers.
     */
-    private func adjustAnchorPointForGestureRecognizer(gestureRecognizer: UIGestureRecognizer) {
-        if gestureRecognizer.state == .Began {
+    private func adjustAnchorPointForGestureRecognizer(_ gestureRecognizer: UIGestureRecognizer) {
+        if gestureRecognizer.state == .began {
             let piece = gestureRecognizer.view!
-            let locationInView = gestureRecognizer.locationInView(piece)
-            let locationInSuperview = gestureRecognizer.locationInView(piece.superview)
+            let locationInView = gestureRecognizer.location(in: piece)
+            let locationInSuperview = gestureRecognizer.location(in: piece.superview)
             
-            piece.layer.anchorPoint = CGPointMake(locationInView.x / piece.bounds.size.width, locationInView.y / piece.bounds.size.height)
+            piece.layer.anchorPoint = CGPoint(x: locationInView.x / piece.bounds.size.width, y: locationInView.y / piece.bounds.size.height)
             piece.center = locationInSuperview
         }
     }
@@ -87,8 +87,8 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     /**
     Display a menu with a single item to allow the piece's transform to be reset.
     */
-    @IBAction private func showResetMenu(gestureRecognizer: UILongPressGestureRecognizer) {
-        if gestureRecognizer.state == .Began {
+    @IBAction private func showResetMenu(_ gestureRecognizer: UILongPressGestureRecognizer) {
+        if gestureRecognizer.state == .began {
             
             self.becomeFirstResponder()
             self.pieceForReset = gestureRecognizer.view
@@ -99,12 +99,12 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
             let menuItemTitle = NSLocalizedString("Reset", comment: "Reset menu item title")
             let resetMenuItem = UIMenuItem(title: menuItemTitle, action: #selector(APLViewController.resetPiece(_:)))
             
-            let menuController = UIMenuController.sharedMenuController()
+            let menuController = UIMenuController.shared
             menuController.menuItems = [resetMenuItem]
             
-            let location = gestureRecognizer.locationInView(gestureRecognizer.view)
-            let menuLocation = CGRectMake(location.x, location.y, 0, 0)
-            menuController.setTargetRect(menuLocation, inView: gestureRecognizer.view!)
+            let location = gestureRecognizer.location(in: gestureRecognizer.view)
+            let menuLocation = CGRect(x: location.x, y: location.y, width: 0, height: 0)
+            menuController.setTargetRect(menuLocation, in: gestureRecognizer.view!)
             
             menuController.setMenuVisible(true, animated: true)
         }
@@ -114,23 +114,23 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     /**
     Animate back to the default anchor point and transform.
     */
-    func resetPiece(controller: UIMenuController) {
+    func resetPiece(_ controller: UIMenuController) {
         let pieceForReset = self.pieceForReset!
         
-        let centerPoint = CGPointMake(CGRectGetMidX(pieceForReset.bounds), CGRectGetMidY(pieceForReset.bounds))
-        let locationInSuperview = pieceForReset.convertPoint(centerPoint, toView: pieceForReset.superview)
+        let centerPoint = CGPoint(x: pieceForReset.bounds.midX, y: pieceForReset.bounds.midY)
+        let locationInSuperview = pieceForReset.convert(centerPoint, to: pieceForReset.superview)
         
-        pieceForReset.layer.anchorPoint = CGPointMake(0.5, 0.5)
+        pieceForReset.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         pieceForReset.center = locationInSuperview
         
         UIView.beginAnimations(nil, context: nil)
-        pieceForReset.transform = CGAffineTransformIdentity
+        pieceForReset.transform = CGAffineTransform.identity
         UIView.commitAnimations()
     }
     
     
     // UIMenuController requires that we can become first responder or it won't display
-    override func canBecomeFirstResponder() -> Bool {
+    override var canBecomeFirstResponder : Bool {
         return true
     }
     
@@ -141,16 +141,16 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     Shift the piece's center by the pan amount.
     Reset the gesture recognizer's translation to {0, 0} after applying so the next callback is a delta from the current position.
     */
-    @IBAction private func panPiece(gestureRecognizer: UIPanGestureRecognizer) {
+    @IBAction private func panPiece(_ gestureRecognizer: UIPanGestureRecognizer) {
         let piece = gestureRecognizer.view!
         
         self.adjustAnchorPointForGestureRecognizer(gestureRecognizer)
         
-        if gestureRecognizer.state == .Began || gestureRecognizer.state == .Changed {
-            let translation = gestureRecognizer.translationInView(piece.superview!)
+        if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
+            let translation = gestureRecognizer.translation(in: piece.superview!)
             
-            piece.center = CGPointMake(piece.center.x + translation.x, piece.center.y + translation.y)
-            gestureRecognizer.setTranslation(CGPointZero, inView: piece.superview)
+            piece.center = CGPoint(x: piece.center.x + translation.x, y: piece.center.y + translation.y)
+            gestureRecognizer.setTranslation(CGPoint.zero, in: piece.superview)
         }
     }
     
@@ -159,11 +159,11 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     Rotate the piece by the current rotation.
     Reset the gesture recognizer's rotation to 0 after applying so the next callback is a delta from the current rotation.
     */
-    @IBAction private func rotatePiece(gestureRecognizer: UIRotationGestureRecognizer) {
+    @IBAction private func rotatePiece(_ gestureRecognizer: UIRotationGestureRecognizer) {
         self.adjustAnchorPointForGestureRecognizer(gestureRecognizer)
         
-        if gestureRecognizer.state == .Began || gestureRecognizer.state == .Changed {
-            gestureRecognizer.view!.transform = CGAffineTransformRotate(gestureRecognizer.view!.transform, gestureRecognizer.rotation)
+        if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
+            gestureRecognizer.view!.transform = gestureRecognizer.view!.transform.rotated(by: gestureRecognizer.rotation)
             gestureRecognizer.rotation = 0
         }
     }
@@ -173,11 +173,11 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     Scale the piece by the current scale.
     Reset the gesture recognizer's rotation to 0 after applying so the next callback is a delta from the current scale.
     */
-    @IBAction private func scalePiece(gestureRecognizer: UIPinchGestureRecognizer) {
+    @IBAction private func scalePiece(_ gestureRecognizer: UIPinchGestureRecognizer) {
         self.adjustAnchorPointForGestureRecognizer(gestureRecognizer)
         
-        if gestureRecognizer.state == .Began || gestureRecognizer.state == .Changed {
-            gestureRecognizer.view!.transform = CGAffineTransformScale(gestureRecognizer.view!.transform, gestureRecognizer.scale, gestureRecognizer.scale)
+        if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
+            gestureRecognizer.view!.transform = gestureRecognizer.view!.transform.scaledBy(x: gestureRecognizer.scale, y: gestureRecognizer.scale)
             gestureRecognizer.scale = 1
         }
     }
@@ -187,7 +187,7 @@ class APLViewController: UIViewController, UIGestureRecognizerDelegate {
     Ensure that the pinch, pan and rotate gesture recognizers on a particular view can all recognize simultaneously.
     Prevent other gesture recognizers from recognizing simultaneously.
     */
-    func gestureRecognizer(gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWithGestureRecognizer otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         // If the gesture recognizers's view isn't one of our pieces, don't allow simultaneous recognition.
         if gestureRecognizer.view !== self.firstPieceView && gestureRecognizer.view !== self.secondPieceView && gestureRecognizer.view != self.thirdPieceView {
             return false

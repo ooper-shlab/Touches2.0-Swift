@@ -81,7 +81,7 @@ class APLViewController: UIViewController {
     /**
     Handles the start of a touch.
     */
-    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         let numTaps = (touches.first! as UITouch).tapCount
         
         
@@ -94,13 +94,13 @@ class APLViewController: UIViewController {
                 // A double tap positions the three pieces in a diagonal.
                 // The user will want to double tap when two or more pieces are on top of each other
                 if self.firstPieceView.center.x == self.secondPieceView.center.x {
-                    self.secondPieceView.center = CGPointMake(self.firstPieceView.center.x - 50, self.firstPieceView.center.y - 50)
+                    self.secondPieceView.center = CGPoint(x: self.firstPieceView.center.x - 50, y: self.firstPieceView.center.y - 50)
                 }
                 if self.firstPieceView.center.x == self.thirdPieceView.center.x {
-                    self.thirdPieceView.center  = CGPointMake(self.firstPieceView.center.x + 50, self.firstPieceView.center.y + 50)
+                    self.thirdPieceView.center  = CGPoint(x: self.firstPieceView.center.x + 50, y: self.firstPieceView.center.y + 50)
                 }
                 if self.secondPieceView.center.x == self.thirdPieceView.center.x {
-                    self.thirdPieceView.center  = CGPointMake(self.secondPieceView.center.x + 50, self.secondPieceView.center.y + 50)
+                    self.thirdPieceView.center  = CGPoint(x: self.secondPieceView.center.x + 50, y: self.secondPieceView.center.y + 50)
                 }
                 self.touchInstructionsText.text = ""
             }
@@ -109,9 +109,9 @@ class APLViewController: UIViewController {
         }
         // Enumerate through all the touch objects.
         var touchCount = 0
-        for touch in touches as Set<UITouch> {
+        for touch in touches {
             // Send to the dispatch method, which will make sure the appropriate subview is acted upon.
-            self.dispatchFirstTouchAtPoint(touch.locationInView(self.view), forEvent: nil)
+            self.dispatchFirstTouchAtPoint(touch.location(in: self.view), forEvent: nil)
             touchCount += 1
         }
     }
@@ -119,14 +119,14 @@ class APLViewController: UIViewController {
     /**
     Checks to see which view, or views, the point is in and then calls a method to perform the opening animation, which  makes the piece slightly larger, as if it is being picked up by the user.
     */
-    private func dispatchFirstTouchAtPoint(touchPoint: CGPoint, forEvent event: UIEvent?) {
-        if CGRectContainsPoint(self.firstPieceView.frame, touchPoint) {
+    private func dispatchFirstTouchAtPoint(_ touchPoint: CGPoint, forEvent event: UIEvent?) {
+        if self.firstPieceView.frame.contains(touchPoint) {
             self.animateFirstTouchAtPoint(touchPoint, forView: self.firstPieceView)
         }
-        if CGRectContainsPoint(self.secondPieceView.frame, touchPoint) {
+        if self.secondPieceView.frame.contains(touchPoint) {
             self.animateFirstTouchAtPoint(touchPoint, forView: self.secondPieceView)
         }
-        if CGRectContainsPoint(self.thirdPieceView.frame, touchPoint) {
+        if self.thirdPieceView.frame.contains(touchPoint) {
             self.animateFirstTouchAtPoint(touchPoint, forView: self.thirdPieceView)
         }
         
@@ -135,13 +135,13 @@ class APLViewController: UIViewController {
     /**
     Handles the continuation of a touch.
     */
-    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         var touchCount = 0
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches moved", comment: "Phase label text for touches moved")
         // Enumerates through all touch objects
-        for touch in touches as Set<UITouch> {
+        for touch in touches {
             // Send to the dispatch method, which will make sure the appropriate subview is acted upon
-            self.dispatchTouchEvent(touch.view!, toPosition: touch.locationInView(self.view))
+            self.dispatchTouchEvent(touch.view!, toPosition: touch.location(in: self.view))
             touchCount += 1
         }
         
@@ -159,15 +159,15 @@ class APLViewController: UIViewController {
     Checks to see which view, or views, the point is in and then sets the center of each moved view to the new postion.
     If views are directly on top of each other, they move together.
     */
-    private func dispatchTouchEvent(theView: UIView, toPosition position: CGPoint) {
+    private func dispatchTouchEvent(_ theView: UIView, toPosition position: CGPoint) {
         // Check to see which view, or views,  the point is in and then move to that position.
-        if CGRectContainsPoint(self.firstPieceView.frame, position) {
+        if self.firstPieceView.frame.contains(position) {
             self.firstPieceView.center = position
         }
-        if CGRectContainsPoint(self.secondPieceView.frame, position) {
+        if self.secondPieceView.frame.contains(position) {
             self.secondPieceView.center = position
         }
-        if CGRectContainsPoint(self.thirdPieceView.frame, position) {
+        if self.thirdPieceView.frame.contains(position) {
             self.thirdPieceView.center = position
         }
     }
@@ -175,12 +175,12 @@ class APLViewController: UIViewController {
     /**
     Handles the end of a touch event.
     */
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches ended", comment: "Phase label text for touches ended")
         // Enumerates through all touch object
-        for touch in touches as Set<UITouch> {
+        for touch in touches {
             // Sends to the dispatch method, which will make sure the appropriate subview is acted upon
-            self.dispatchTouchEndEvent(touch.view!, toPosition: touch.locationInView(self.view))
+            self.dispatchTouchEndEvent(touch.view!, toPosition: touch.location(in: self.view))
         }
     }
     
@@ -188,22 +188,22 @@ class APLViewController: UIViewController {
     /**
     Checks to see which view, or views,  the point is in and then calls a method to perform the closing animation, which is to return the piece to its original size, as if it is being put down by the user.
     */
-    private func dispatchTouchEndEvent(theView: UIView, toPosition position: CGPoint) {
+    private func dispatchTouchEndEvent(_ theView: UIView, toPosition position: CGPoint) {
         // Check to see which view, or views, the point is in and then animate to that position.
-        if CGRectContainsPoint(self.firstPieceView.frame, position) {
+        if self.firstPieceView.frame.contains(position) {
             self.animateView(self.firstPieceView, toPosition: position)
         }
-        if CGRectContainsPoint(self.secondPieceView.frame, position) {
+        if self.secondPieceView.frame.contains(position) {
             self.animateView(self.secondPieceView, toPosition: position)
         }
-        if CGRectContainsPoint(self.thirdPieceView.frame, position) {
+        if self.thirdPieceView.frame.contains(position) {
             self.animateView(self.thirdPieceView, toPosition: position)
         }
         
         // If one piece obscures another, display a message so the user can move the pieces apart.
-        if CGPointEqualToPoint(self.firstPieceView.center, self.secondPieceView.center) ||
-            CGPointEqualToPoint(self.firstPieceView.center, self.thirdPieceView.center) ||
-            CGPointEqualToPoint(self.secondPieceView.center, self.thirdPieceView.center)
+        if self.firstPieceView.center.equalTo(self.secondPieceView.center) ||
+            self.firstPieceView.center.equalTo(self.thirdPieceView.center) ||
+            self.secondPieceView.center.equalTo(self.thirdPieceView.center)
         {
             
             self.touchInstructionsText.text = NSLocalizedString("Double tap the background to move the pieces apart.", comment: "Instructions text string.")
@@ -214,12 +214,12 @@ class APLViewController: UIViewController {
     }
     
     
-    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         self.touchPhaseText.text = NSLocalizedString("Phase: Touches cancelled", comment: "Phase label text for touches cancelled")
         // Enumerates through all touch objects.
-        for touch in touches! {
+        for touch in touches {
             // Sends to the dispatch method, which will make sure the appropriate subview is acted upon.
-            self.dispatchTouchEndEvent(touch.view!, toPosition: touch.locationInView(self.view))
+            self.dispatchTouchEndEvent(touch.view!, toPosition: touch.location(in: self.view))
         }
     }
     
@@ -228,11 +228,11 @@ class APLViewController: UIViewController {
     /**
     Scales up a view slightly which makes the piece slightly larger, as if it is being picked up by the user.
     */
-    private func animateFirstTouchAtPoint(touchPoint: CGPoint, forView theView: UIImageView) {
+    private func animateFirstTouchAtPoint(_ touchPoint: CGPoint, forView theView: UIImageView) {
         // Pulse the view by scaling up, then move the view to under the finger.
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration(GROW_ANIMATION_DURATION_SECONDS)
-        theView.transform = CGAffineTransformMakeScale(1.2, 1.2)
+        theView.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
         UIView.commitAnimations()
     }
     
@@ -240,13 +240,13 @@ class APLViewController: UIViewController {
     /**
     Scales down the view and moves it to the new position.
     */
-    private func animateView(theView: UIView, toPosition thePosition: CGPoint) {
+    private func animateView(_ theView: UIView, toPosition thePosition: CGPoint) {
         UIView.beginAnimations(nil, context: nil)
         UIView.setAnimationDuration(SHRINK_ANIMATION_DURATION_SECONDS)
         // Set the center to the final postion.
         theView.center = thePosition
         // Set the transform back to the identity, thus undoing the previous scaling effect.
-        theView.transform = CGAffineTransformIdentity
+        theView.transform = CGAffineTransform.identity
         UIView.commitAnimations()
     }
     
